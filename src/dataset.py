@@ -10,11 +10,13 @@ class DataSet:
             join(path, "training_review.csv"), sep=self.csv_sep, engine="python"
         ).rename({"product_type": "domain"}, axis=1)
         self.training = DataSet.transform_new_set(self.training)
+        self.training_by_domain = DataSet.get_by_domain(self.training)
 
         self.testing: pd.DataFrame = pd.read_csv(
             join(path, "testing_review.csv"), sep=self.csv_sep, engine="python"
         ).rename({"product_type": "domain"}, axis=1)
         self.testing = DataSet.transform_new_set(self.testing)
+        self.testing_by_domain = DataSet.get_by_domain(self.testing)
 
     @staticmethod
     def transform_new_set(df: pd.DataFrame) -> pd.DataFrame:
@@ -29,23 +31,16 @@ class DataSet:
         df["rating_str"] = df["rating"].astype("object")
         return df
 
-    def get_by_domain(self, df: pd.DataFrame) -> dict[str : pd.DataFrame]:
+    @staticmethod
+    def get_by_domain(df: pd.DataFrame) -> dict[str : pd.DataFrame]:
         types = df["domain"].unique()
         ret_obj = {k: None for k in types}
         for type_ in types:
             ret_obj[type_] = df[df["domain"] == type_].drop("domain", axis=1)
         return ret_obj
 
-    def get_training_by_domain(self):
-        return self.get_by_domain(self.training)
-
-    def get_testing_by_domain(self):
-        return self.get_by_domain(self.testing)
-
 
 if __name__ == "__main__":
     ds = DataSet("./parsed_data/")
-    print(ds.get_testing_by_domain().keys())
-    print(ds.get_training_by_domain().keys())
     print(ds.testing.dtypes)
     print(ds.testing)

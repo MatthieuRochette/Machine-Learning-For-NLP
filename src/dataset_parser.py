@@ -115,13 +115,13 @@ def convert_to_csv(data_set: list, file):
 def split_data_set(data_source: list, save_path: str):
     training_set = []
     testing_set = []
-    for k, v in data_source.items():
-        # repeat-safe because rand is seeded and data_source is always
-        # read in the same order by items()
+    for _, v in data_source.items():
+        # repeat-safe (in the short term) because rand is seeded and data_source is always
+        # read in the same order by dict.items()
         rand.shuffle(v)
         train = v[: int((len(v) + 1) * 0.80)]
         test = v[int((len(v) + 1) * 0.80) :]
-        # print(k, ":", len(v), type(v), v[0], end="\n\n")
+        # print(_, ":", len(v), type(v), v[0], end="\n\n")
         for i in train:
             training_set.append(i)
         for i in test:
